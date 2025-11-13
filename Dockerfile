@@ -1,23 +1,26 @@
-# Étape 1 : utiliser une image officielle Node
+# Étape 1 : image Node officielle
 FROM node:20-alpine
 
-# Etape 2 : définir le dossier de travail
+# Étape 2 : définir le dossier de travail
 WORKDIR /usr/src/app
 
-# Etape 3 copier les fichiers de dépendances
+# Étape 3 : copier package.json et package-lock.json
 COPY package*.json ./
 
-# Etape 4 : installer les dépendances
+# Étape 4 : installer les dépendances
 RUN npm install
 
-# Etape 5 : copier le reste du code
+# Étape 5 : copier le reste du code
 COPY . .
 
-# Etape 6 : Construire le projet (TypeScript -> JS)
+# Étape 6 : générer le client Prisma
+RUN npx prisma generate --schema=prisma/schema.prisma
+
+# Étape 7 : construire le projet (TypeScript -> JS)
 RUN npm run build
 
-# Etape 7 : Exposer le port utilisé par NestJS
+# Étape 8 : exposer le port
 EXPOSE 3000
 
-# Etape 8 : commande de démarrage
+# Étape 9 : commande de démarrage
 CMD ["npm", "run", "start:prod"]
