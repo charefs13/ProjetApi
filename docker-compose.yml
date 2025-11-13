@@ -1,0 +1,27 @@
+services:
+  api:
+    build: .
+    container_name: nest_api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env   # injecte automatiquement DATABASE_URL
+    depends_on:
+      - db
+    command: npm run start:dev  # lance NestJS en dev (TS directement)
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: leamyriamachaibou
+      POSTGRES_PASSWORD: Sjkydby9mnxw
+      POSTGRES_DB: ProjetApi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
