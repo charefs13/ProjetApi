@@ -5,32 +5,40 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RecipesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // Crud Operations
 
   // Create
   create(createRecipeDto: CreateRecipeDto) {
-    return 'This action adds a new recipe';
+    return this.prisma.recipe.create({ data: createRecipeDto })
+
   }
 
   // Read all
   findAll() {
-    return `This action returns all recipes`;
+    return this.prisma.recipe.findMany();
+
   }
 
   // Read one
-  findOne(id: number) {
-    return `This action returns a #${id} recipe`;
+  findOne(id: string) {
+    return this.prisma.recipe.findUnique({
+      where: { id },
+    });
   }
 
   // Update
-  update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    return `This action updates a #${id} recipe`;
+  update(id: string, updateRecipeDto: UpdateRecipeDto) {
+    return this.prisma.recipe.update({
+      where: { id },
+      data: updateRecipeDto
+    });
   }
 
-// Delete
-  remove(id: number) {
-    return `This action removes a #${id} recipe`;
+
+  // Delete
+  remove(id: string) {
+    return this.prisma.recipe.delete({ where: { id } })
   }
 }

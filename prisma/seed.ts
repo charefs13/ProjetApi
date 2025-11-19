@@ -1,6 +1,5 @@
-import { PrismaClient } from '../generated/prisma'
+import { PrismaClient } from '@prisma/client'; // utiliser le client standard généré
 const prisma = new PrismaClient();
-const now = new Date();
 
 async function main() {
   const now = new Date();
@@ -36,7 +35,7 @@ async function main() {
       title: 'Spaghetti Carbonara',
       description: 'Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.',
       ingredients: 'Spaghetti, Pancetta, Eggs, Parmesan, Pepper',
-      userId: user1.id,
+      userId: user1.id, // UUID en string
     },
   });
 
@@ -45,7 +44,7 @@ async function main() {
       title: 'Tomato Soup',
       description: 'Creamy tomato soup perfect for cold days.',
       ingredients: 'Tomatoes, Onion, Garlic, Cream, Salt & Pepper',
-      userId: user2.id,
+      userId: user2.id, // UUID en string
     },
   });
 
@@ -61,6 +60,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-
-
- 
