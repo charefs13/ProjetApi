@@ -1,16 +1,25 @@
-services:
-  api:
-    build: .
-    container_name: nest_api
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env   # injecte automatiquement DATABASE_URL
-    depends_on:
-      - db
-    command: npm run start:dev  # lance NestJS en dev (TS directement)
+version: '3.9'
 
-  db:
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: ${DATABASE_URL}   # Passe DATABASE_URL du .env
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"   # API backend
+      - "5555:5555"   # Prisma Studio
+    volumes:
+      - ./backend:/usr/src/app       # Live reload pour dev
+      - /usr/src/app/node_modules    # Évite conflits node_modules
+    depends_on:
+      - database
+    command: npm run start:dev      # Dev mode. Pour prod : start:prod
+
+  database:
     image: postgres:15
     container_name: postgres_db
     restart: always
@@ -21,7 +30,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  db_data:
