@@ -6,41 +6,45 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  // 1️⃣ Création de l'application NestJS
   const app = await NestFactory.create(AppModule);
 
-  // 2️⃣ Activation des validations globales pour tous les DTO
+  // 1️⃣ Version globale de l'API
+  // Toutes les routes commenceront par /api/v1
+  app.setGlobalPrefix('api/v1');
+
+  // 2️⃣ Validation globale des DTOs
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,            // Supprime automatiquement les propriétés non déclarées dans les DTO
-      forbidNonWhitelisted: true, // Renvoie une erreur si des propriétés inconnues sont envoyées
-      transform: true,            // Transforme automatiquement les types (ex: string -> number si DTO le demande)
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
-  // 3️⃣ Configuration Swagger (documentation API)
-  // - Ici on définit titre, description, version et auth JWT
+  // 3️⃣ Configuration Swagger
   const config = new DocumentBuilder()
-    .setTitle('Median')                                  // Titre affiché dans Swagger UI
-    .setDescription('The Median API description')       // Description générale
-    .setVersion('0.1')                                  // Version de l’API
-    // 🔑 Ajouter l’authentification Bearer pour Swagger (bouton "Authorize")
+    .setTitle('Median API')
+    .setDescription('Documentation de l’API Median')
+    .setVersion('1.0')
     .addBearerAuth({
-      type: 'http',         // Type HTTP auth
-      scheme: 'bearer',     // Schéma Bearer
-      bearerFormat: 'JWT',  // Format du token
-      in: 'header',         // Passe le token dans le header Authorization
-    }, 'access-token')      // Nom du schéma (utilisé dans @ApiBearerAuth('access-token'))
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'Authorization',
+      in: 'header',
+    })
+    // ⚠️ On ne met **pas** de /api/v1 ici pour éviter le double prefix
     .build();
 
-  // 4️⃣ Génération de la documentation Swagger à partir de la config
+  // 4️⃣ Création du document Swagger
   const document = SwaggerModule.createDocument(app, config);
 
-  // 5️⃣ Route où Swagger sera accessible
-  // → Ex: http://localhost:3000/api
+  // 5️⃣ Setup Swagger
+  // Swagger sera accessible sur http://localhost:3000/api
+  // Toutes les routes documentées commenceront automatiquement par /api/v1 grâce au setGlobalPrefix
   SwaggerModule.setup('api', app, document);
 
-  // 6️⃣ Lancement du serveur sur le port 3000
+  // 6️⃣ Lancement du serveur
   await app.listen(3000);
 }
 bootstrap();
